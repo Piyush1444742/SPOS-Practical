@@ -1,0 +1,91 @@
+import java.util.*; 
+import java.io.*; 
+
+class Main { 
+    public static void main(String args[]) { 
+
+        // Arrays to store process information
+        int Process[] = new int[10];        // process IDs
+        int Burst_time[] = new int[10];     // burst time (CPU time needed)
+        int Remaining_BT[] = new int[10];   // copy of burst time to track remaining time
+        int WT[] = new int[10];             // waiting time
+        int TAT[] = new int[10];            // turnaround time
+        
+        int Pno, sum = 0;                   // total number of processes
+        int TimeQuantum;                    // time quantum for round robin
+
+        Scanner sc = new Scanner(System.in);
+
+        // Input: Number of processes
+        System.out.println("\nEnter the number of processes:");
+        Pno = sc.nextInt();
+
+        // Input: Process IDs (for example: 1 2 3 ...)
+        System.out.println("\nEnter each process ID:");
+        for (int i = 0; i < Pno; i++) { 
+            Process[i] = sc.nextInt(); 
+        } 
+
+        // Input: Burst Time of each process
+        System.out.println("\nEnter the Burst Time of each process:");
+        for (int i = 0; i < Pno; i++) { 
+            Burst_time[i] = sc.nextInt(); 
+            Remaining_BT[i] = Burst_time[i];  // copy burst time for calculation
+        } 
+
+        // Input: Time Quantum
+        System.out.println("\nEnter the Time Quantum:");
+        TimeQuantum = sc.nextInt();   
+
+        // ROUND ROBIN SCHEDULING STARTS
+        do { 
+            for (int i = 0; i < Pno; i++) { 
+                if (Remaining_BT[i] > TimeQuantum) { 
+                    // If remaining burst time is greater than time quantum,
+                    // process runs for a full quantum
+                    Remaining_BT[i] -= TimeQuantum;  
+
+                    // Increase waiting time for all other unfinished processes
+                    for (int j = 0; j < Pno; j++) { 
+                        if ((j != i) && (Remaining_BT[j] != 0)) 
+                            WT[j] += TimeQuantum; 
+                    } 
+                } else if (Remaining_BT[i] > 0) {  
+                    // Process finishes before or exactly at time quantum
+                    for (int j = 0; j < Pno; j++) { 
+                        if ((j != i) && (Remaining_BT[j] != 0)) 
+                            WT[j] += Remaining_BT[i]; 
+                    }  
+                    Remaining_BT[i] = 0;  // process completed
+                }  
+            } 
+
+            // Check if all processes are completed
+            sum = 0;  
+            for (int k = 0; k < Pno; k++)  
+                sum += Remaining_BT[k]; 
+
+        } while (sum != 0);  // repeat until all processes are done
+
+        // Calculate Turnaround Time (TAT = BT + WT)
+        for (int i = 0; i < Pno; i++) 
+            TAT[i] = Burst_time[i] + WT[i]; 
+
+        // OUTPUT: Display process info
+        System.out.println("\nProcess\tBT\tWT\tTAT"); 
+        for (int i = 0; i < Pno; i++) { 
+            System.out.println("P" + Process[i] + "\t" + Burst_time[i] + "\t" + WT[i] + "\t" + TAT[i]); 
+        }  
+
+        // Calculate average waiting time and turnaround time
+        float avg_wt = 0, avg_tat = 0; 
+        for (int j = 0; j < Pno; j++)  
+            avg_wt += WT[j];  
+
+        for (int j = 0; j < Pno; j++)  
+            avg_tat += TAT[j];  
+
+        System.out.println("\nAverage Waiting Time: " + (avg_wt / Pno));    
+        System.out.println("Average Turnaround Time: " + (avg_tat / Pno));    
+    }   
+}
