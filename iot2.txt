@@ -1,0 +1,17 @@
+#include <dht.h>
+dht
+DHT;
+#define DHT_11 PIN 7
+void setup()
+{
+serial.begin (9600);
+}
+void loop ()
+{
+int chk = DHT.read11 (DHT11_PIN);
+Serial.print("temperature = ");
+Serial.print(DHT.temperature);
+Serial.print("humidity = ");
+Serial.print(DHT.humidity);
+delay(1000);
+}
